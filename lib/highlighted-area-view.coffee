@@ -114,12 +114,13 @@ class HighlightedAreaView
     editor.scanInBufferRange new RegExp(regexSearch, regexFlags), range,
       (result) =>
         resultCount += 1
-        unless @showHighlightOnSelectedWord(result.range, @selections)
-          marker = editor.markBufferRange(result.range)
-          decoration = editor.decorateMarker(marker,
-            {type: 'highlight', class: @makeClasses()})
-          @views.push marker
-          @emitter.emit 'did-add-marker', marker
+        if resultCount % 1 == 0 #change 1 to 2 for every other hit to be highlighted
+          unless @showHighlightOnSelectedWord(result.range, @selections)
+            marker = editor.markBufferRange(result.range)
+            decoration = editor.decorateMarker(marker,
+              {type: 'highlight', class: @makeClasses()})
+            @views.push marker
+            @emitter.emit 'did-add-marker', marker
 
     @statusBarElement?.updateCount(resultCount)
 
@@ -146,6 +147,7 @@ class HighlightedAreaView
     outcome
 
   removeMarkers: =>
+    #Comment this section out if you want highlights to persist
     return unless @views?
     return if @views.length is 0
     for view in @views
