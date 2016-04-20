@@ -71,6 +71,9 @@ class HighlightedAreaView
   getActiveEditor: ->
     atom.workspace.getActiveTextEditor()
 
+#==================================================================
+#==================================================================
+
   handleSelection: =>
     @removeMarkers()
 
@@ -83,16 +86,31 @@ class HighlightedAreaView
 
     @selections = editor.getSelections()
 
-    #=====================
+    #========================================
     text = _.escapeRegExp(@selections[0].getText())
-    alert(_.escapeRegExp(@selections[1].getText()))
-    #=====================
+    #alert(_.escapeRegExp(@selections[1].getText()))
+    if (@selections.length > 1)
+      text1 = _.escapeRegExp(@selections[1].getText())
+      #alert(text1)
+    #========================================
 
-    text = _.escapeRegExp(@selections[0].getText())
     regex = new RegExp("\\S*\\w*\\b", 'gi')
+
+    #========================================
+    regex1 = new RegExp("\\S*\\w*\\b", 'gi')
+    #========================================
+
     result = regex.exec(text)
+    if (@selections.length > 1)
+      result1 = regex1.exec(text1)
+      #alert(result1)
+
+    #alert(result)
 
     return unless result?
+    if (@selections.length > 1)
+      return unless result1?
+
     return if result[0].length < atom.config.get(
       'highlight-selected.minimumLength') or
               result.index isnt 0 or
@@ -106,6 +124,8 @@ class HighlightedAreaView
 
     @ranges = []
     regexSearch = result[0]
+    if (@selections.length > 1)
+      regexSearch1 = result1[0]
 
     if atom.config.get('highlight-selected.onlyHighlightWholeWords')
       if regexSearch.indexOf("\$") isnt -1 \
@@ -114,6 +134,17 @@ class HighlightedAreaView
       else
         regexSearch =  "\\b" + regexSearch
       regexSearch = regexSearch + "\\b"
+
+
+    if (@selections.length > 1)
+      if atom.config.get('highlight-selected.onlyHighlightWholeWords')
+        if regexSearch1.indexOf("\$") isnt -1 \
+        and editor.getGrammar()?.name is 'PHP'
+          regexSearch1 = regexSearch1.replace("\$", "\$\\b")
+        else
+          regexSearch1 =  "\\b" + regexSearch1
+        regexSearch1 = regexSearch1 + "\\b"
+
 
     resultCount = 0
     editor.scanInBufferRange new RegExp(regexSearch, regexFlags), range,
@@ -128,6 +159,28 @@ class HighlightedAreaView
             @emitter.emit 'did-add-marker', marker
 
     @statusBarElement?.updateCount(resultCount)
+
+    #========================================
+    if (@selections.length > 1)
+      resultCount1 = 0
+      editor.scanInBufferRange new RegExp(regexSearch1, regexFlags), range,
+        (result1) =>
+          resultCount1 += 1
+          unless @showHighlightOnSelectedWord(result1.range, @selections)
+            marker = editor.markBufferRange(result1.range)
+            decoration = editor.decorateMarker(marker,
+              {type: 'highlight', class: @makeClasses()})
+            @views.push marker
+            @emitter.emit 'did-add-marker', marker
+
+      #@statusBarElement?.updateCount(resultCount)
+
+
+
+    #========================================
+
+    #============================highlight code============================
+    #======================================================================
 
   makeClasses: ->
     className = 'highlight-selected'
@@ -152,7 +205,6 @@ class HighlightedAreaView
     outcome
 
   removeMarkers: =>
-    #Comment this section out if you want highlights to persist
     return unless @views?
     return if @views.length is 0
     for view in @views
