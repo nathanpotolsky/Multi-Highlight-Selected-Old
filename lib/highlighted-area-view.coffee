@@ -83,6 +83,11 @@ class HighlightedAreaView
 
     @selections = editor.getSelections()
 
+    #=====================
+    text = _.escapeRegExp(@selections[0].getText())
+    alert(_.escapeRegExp(@selections[1].getText()))
+    #=====================
+
     text = _.escapeRegExp(@selections[0].getText())
     regex = new RegExp("\\S*\\w*\\b", 'gi')
     result = regex.exec(text)
