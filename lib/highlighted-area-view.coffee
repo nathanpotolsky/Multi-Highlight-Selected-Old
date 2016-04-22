@@ -71,8 +71,7 @@ class HighlightedAreaView
   getActiveEditor: ->
     atom.workspace.getActiveTextEditor()
 
-#==================================================================
-#==================================================================
+#=============== Highlighting Code Block ===============
 
   handleSelection: =>
     @removeMarkers()
@@ -86,31 +85,57 @@ class HighlightedAreaView
 
     @selections = editor.getSelections()
 
-    #========================================
+    #?????????????????????????????????????????????
+    resultCount = 0
+    for selection in @selections
+      text = _.escapeRegExp(selection.getText())
+      regex = new RegExp("\\S*\\w*\\b", 'gi')
+      result = regex.exec(text)
+
+      return unless result?
+      return if result[0].length < atom.config.get(
+        'highlight-selected.minimumLength') or
+                result.index isnt 0 or
+                result[0] isnt result.input
+
+      regexFlags = 'g'
+      if atom.config.get('highlight-selected.ignoreCase')
+        regexFlags = 'gi'
+
+      range =  [[0, 0], editor.getEofBufferPosition()]
+
+      @ranges = []
+      regexSearch = result[0]
+
+      if atom.config.get('highlight-selected.onlyHighlightWholeWords')
+        if regexSearch.indexOf("\$") isnt -1 \
+        and editor.getGrammar()?.name is 'PHP'
+          regexSearch = regexSearch.replace("\$", "\$\\b")
+        else
+          regexSearch =  "\\b" + regexSearch
+        regexSearch = regexSearch + "\\b"
+
+      #resultCount = 0
+      editor.scanInBufferRange new RegExp(regexSearch, regexFlags), range,
+        (result) =>
+          resultCount += 1
+          unless @showHighlightOnSelectedWord(result.range, @selections)
+            marker = editor.markBufferRange(result.range)
+            decoration = editor.decorateMarker(marker,
+              {type: 'highlight', class: @makeClasses()})
+            @views.push marker
+            @emitter.emit 'did-add-marker', marker
+
+      @statusBarElement?.updateCount(resultCount)
+    #?????????????????????????????????????????????
+
+
+    ###
     text = _.escapeRegExp(@selections[0].getText())
-    #alert(_.escapeRegExp(@selections[1].getText()))
-    if (@selections.length > 1)
-      text1 = _.escapeRegExp(@selections[1].getText())
-      #alert(text1)
-    #========================================
-
     regex = new RegExp("\\S*\\w*\\b", 'gi')
-
-    #========================================
-    regex1 = new RegExp("\\S*\\w*\\b", 'gi')
-    #========================================
-
     result = regex.exec(text)
-    if (@selections.length > 1)
-      result1 = regex1.exec(text1)
-      #alert(result1)
-
-    #alert(result)
 
     return unless result?
-    if (@selections.length > 1)
-      return unless result1?
-
     return if result[0].length < atom.config.get(
       'highlight-selected.minimumLength') or
               result.index isnt 0 or
@@ -124,8 +149,6 @@ class HighlightedAreaView
 
     @ranges = []
     regexSearch = result[0]
-    if (@selections.length > 1)
-      regexSearch1 = result1[0]
 
     if atom.config.get('highlight-selected.onlyHighlightWholeWords')
       if regexSearch.indexOf("\$") isnt -1 \
@@ -135,52 +158,19 @@ class HighlightedAreaView
         regexSearch =  "\\b" + regexSearch
       regexSearch = regexSearch + "\\b"
 
-
-    if (@selections.length > 1)
-      if atom.config.get('highlight-selected.onlyHighlightWholeWords')
-        if regexSearch1.indexOf("\$") isnt -1 \
-        and editor.getGrammar()?.name is 'PHP'
-          regexSearch1 = regexSearch1.replace("\$", "\$\\b")
-        else
-          regexSearch1 =  "\\b" + regexSearch1
-        regexSearch1 = regexSearch1 + "\\b"
-
-
     resultCount = 0
     editor.scanInBufferRange new RegExp(regexSearch, regexFlags), range,
       (result) =>
         resultCount += 1
-        if resultCount % 1 == 0 #change 1 to 2 for every other hit to be highlighted
-          unless @showHighlightOnSelectedWord(result.range, @selections)
-            marker = editor.markBufferRange(result.range)
-            decoration = editor.decorateMarker(marker,
-              {type: 'highlight', class: @makeClasses()})
-            @views.push marker
-            @emitter.emit 'did-add-marker', marker
+        unless @showHighlightOnSelectedWord(result.range, @selections)
+          marker = editor.markBufferRange(result.range)
+          decoration = editor.decorateMarker(marker,
+            {type: 'highlight', class: @makeClasses()})
+          @views.push marker
+          @emitter.emit 'did-add-marker', marker
 
     @statusBarElement?.updateCount(resultCount)
-
-    #========================================
-    if (@selections.length > 1)
-      resultCount1 = 0
-      editor.scanInBufferRange new RegExp(regexSearch1, regexFlags), range,
-        (result1) =>
-          resultCount1 += 1
-          unless @showHighlightOnSelectedWord(result1.range, @selections)
-            marker = editor.markBufferRange(result1.range)
-            decoration = editor.decorateMarker(marker,
-              {type: 'highlight', class: @makeClasses()})
-            @views.push marker
-            @emitter.emit 'did-add-marker', marker
-
-      #@statusBarElement?.updateCount(resultCount)
-
-
-
-    #========================================
-
-    #============================highlight code============================
-    #======================================================================
+    ###
 
   makeClasses: ->
     className = 'highlight-selected'
@@ -203,6 +193,8 @@ class HighlightedAreaView
                 (range.end.row is selectionRange.end.row)
       break if outcome
     outcome
+
+#=============== Highlighting Code Block ===============
 
   removeMarkers: =>
     return unless @views?
