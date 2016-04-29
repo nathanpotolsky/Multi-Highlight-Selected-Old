@@ -122,7 +122,7 @@ class HighlightedAreaView
           unless @showHighlightOnSelectedWord(result.range, @selections)
             marker = editor.markBufferRange(result.range)
             decoration = editor.decorateMarker(marker,
-              {type: 'highlight', class: @makeClasses()})
+              {type: 'highlight', class: @makeClasses(@selections.length)})
             @views.push marker
             @emitter.emit 'did-add-marker', marker
 
@@ -172,8 +172,8 @@ class HighlightedAreaView
     @statusBarElement?.updateCount(resultCount)
     ###
 
-  makeClasses: ->
-    className = 'highlight-selected'
+  makeClasses: (number) ->
+    className = 'highlight-selected selection'+number
     if atom.config.get('highlight-selected.lightTheme')
       className += ' light-theme'
 
