@@ -131,6 +131,9 @@ class HighlightedAreaView
 
     #@statusBarElement?.updateCount(resultCount)
 
+  #There are multiple css classes that individually have an rgb code
+  #Calls the specific css class using number, can add more colors and themes by
+  #adding more css classes in the highlight-selected.less file
   makeClasses: (number) ->
     className = 'highlight-selected selection'+number
     if atom.config.get('highlight-selected.lightTheme')
@@ -140,6 +143,8 @@ class HighlightedAreaView
       className += ' background'
     className
 
+  #highlights all the words in the selection array
+  #what allows multiple-selection to work 
   showHighlightOnSelectedWord: (range, selections) ->
     return false unless atom.config.get(
       'highlight-selected.hideHighlightOnSelectedWord')
@@ -155,6 +160,8 @@ class HighlightedAreaView
 
 #=============== Highlighting Code Block ===============
 
+#the deselection part of the selection
+#TO-DO: be able to de-select one at a time
   removeMarkers: =>
     return unless @views?
     return if @views.length is 0
@@ -165,6 +172,8 @@ class HighlightedAreaView
     @statusBarElement?.updateCount(@views.length)
     @emitter.emit 'did-remove-all-markers'
 
+  #Calculations for how a word is actually found and delimited
+###########################start###############################################
   isWordSelected: (selection) ->
     if selection.getBufferRange().isSingleLine()
       selectionRange = selection.getBufferRange()
@@ -194,7 +203,10 @@ class HighlightedAreaView
     selectionEnd = selection.getBufferRange().end
     range = Range.fromPointWithDelta(selectionEnd, 0, 1)
     @isNonWordCharacter(@getActiveEditor().getTextInBufferRange(range))
+  ###########################end###############################################
 
+  #Shows character length of the last word hightlighted down in the StatusBar
+  #in this format (1, length_of_string)
   setupStatusBar: =>
     return if @statusBarElement?
     return unless atom.config.get('highlight-selected.showInStatusBar')
