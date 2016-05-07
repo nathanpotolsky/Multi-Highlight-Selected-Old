@@ -71,8 +71,7 @@ class HighlightedAreaView
   getActiveEditor: ->
     atom.workspace.getActiveTextEditor()
 
-#=============== Highlighting Code Block ===============
-
+  # Function to handle selections
   handleSelection: =>
     @removeMarkers()
 
@@ -84,15 +83,18 @@ class HighlightedAreaView
     return unless @isWordSelected(editor.getLastSelection())
 
     @selections = editor.getSelections()
+    # added two arrays to store selected words and counts in order to output to
+    # status bar.
     @selectedWords = []
     @selectedCounts = []
-    #For each set of instances of a word, pass that word to the highLightOneSelection method
+    # For each set of instances of a word, pass that word to the highLightOneSelection method
     for i in [0 .. @selections.length-1]
       text = _.escapeRegExp(@selections[i].getText())
       @highLightOneSelection(text, i)
 
 
-  #Highlights everything that belongs to one color (ie, all instances of the first word, make red)
+  # Highlights everything that belongs to one color (ie, all instances of the
+  # first word, make red)
   highLightOneSelection: (text, i) ->
     editor = @getActiveEditor()
     regex = new RegExp("\\S*\\w*\\b", 'gi')
@@ -134,6 +136,9 @@ class HighlightedAreaView
 
     @selectedWords.push text
     @selectedCounts.push localCount
+
+    # pass in an array of selected words and their counts in respect to update
+    # status count view.
     @statusBarElement?.updateCount(@selectedWords, @selectedCounts)
 
   #There are multiple css classes that individually have an rgb code
@@ -148,8 +153,8 @@ class HighlightedAreaView
       className += ' background'
     className
 
-  #highlights all the words in the selection array
-  #what allows multiple-selection to work
+  # highlights all the words in the selection array
+  # what allows multiple-selection to work
   showHighlightOnSelectedWord: (range, selections) ->
     return false unless atom.config.get(
       'highlight-selected.hideHighlightOnSelectedWord')
@@ -163,10 +168,8 @@ class HighlightedAreaView
       break if outcome
     outcome
 
-#=============== Highlighting Code Block ===============
-
-#the deselection part of the selection
-#TO-DO: be able to de-select one at a time
+# the deselection part of the selection
+# TO-DO: be able to de-select one at a time
   removeMarkers: =>
     return unless @views?
     return if @views.length is 0
