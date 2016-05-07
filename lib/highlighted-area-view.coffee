@@ -85,55 +85,18 @@ class HighlightedAreaView
 
     @selections = editor.getSelections()
 
-    #?????????????????????????????????????????????
-    resultCount = 0
-    for selection in @selections
-      text = _.escapeRegExp(selection.getText())
-      regex = new RegExp("\\S*\\w*\\b", 'gi')
-      result = regex.exec(text)
-
-      return unless result?
-      return if result[0].length < atom.config.get(
-        'highlight-selected.minimumLength') or
-                result.index isnt 0 or
-                result[0] isnt result.input
-
-      regexFlags = 'g'
-      if atom.config.get('highlight-selected.ignoreCase')
-        regexFlags = 'gi'
-
-      range =  [[0, 0], editor.getEofBufferPosition()]
-
-      @ranges = []
-      regexSearch = result[0]
-
-      if atom.config.get('highlight-selected.onlyHighlightWholeWords')
-        if regexSearch.indexOf("\$") isnt -1 \
-        and editor.getGrammar()?.name is 'PHP'
-          regexSearch = regexSearch.replace("\$", "\$\\b")
-        else
-          regexSearch =  "\\b" + regexSearch
-        regexSearch = regexSearch + "\\b"
-
-      #resultCount = 0
-      editor.scanInBufferRange new RegExp(regexSearch, regexFlags), range,
-        (result) =>
-          resultCount += 1
-          unless @showHighlightOnSelectedWord(result.range, @selections)
-            marker = editor.markBufferRange(result.range)
-            decoration = editor.decorateMarker(marker,
-              {type: 'highlight', class: @makeClasses()})
-            @views.push marker
-            @emitter.emit 'did-add-marker', marker
-
-      @statusBarElement?.updateCount(resultCount)
-    #?????????????????????????????????????????????
+    #For each set of instances of a word, pass that word to the highLightOneSelection method
+    for i in [0 .. @selections.length-1]
+      text = _.escapeRegExp(@selections[i].getText())
+      @highLightOneSelection(text, i)
 
 
-    ###
-    text = _.escapeRegExp(@selections[0].getText())
+  #Highlights everything that belongs to one color (ie, all instances of the first word, make red)
+  highLightOneSelection: (text, i) ->
+    editor = @getActiveEditor()
     regex = new RegExp("\\S*\\w*\\b", 'gi')
     result = regex.exec(text)
+    regexSearch = result[0]
 
     return unless result?
     return if result[0].length < atom.config.get(
@@ -148,7 +111,6 @@ class HighlightedAreaView
     range =  [[0, 0], editor.getEofBufferPosition()]
 
     @ranges = []
-    regexSearch = result[0]
 
     if atom.config.get('highlight-selected.onlyHighlightWholeWords')
       if regexSearch.indexOf("\$") isnt -1 \
@@ -158,22 +120,22 @@ class HighlightedAreaView
         regexSearch =  "\\b" + regexSearch
       regexSearch = regexSearch + "\\b"
 
-    resultCount = 0
     editor.scanInBufferRange new RegExp(regexSearch, regexFlags), range,
-      (result) =>
-        resultCount += 1
-        unless @showHighlightOnSelectedWord(result.range, @selections)
-          marker = editor.markBufferRange(result.range)
-          decoration = editor.decorateMarker(marker,
-            {type: 'highlight', class: @makeClasses()})
-          @views.push marker
-          @emitter.emit 'did-add-marker', marker
+    (result) =>
+      unless @showHighlightOnSelectedWord(result.range, @selections)
+        marker = editor.markBufferRange(result.range)
+        decoration = editor.decorateMarker(marker,
+          {type: 'highlight', class: @makeClasses(i+1)})
+        @views.push marker
+        @emitter.emit 'did-add-marker', marker
 
-    @statusBarElement?.updateCount(resultCount)
-    ###
+    #@statusBarElement?.updateCount(resultCount)
 
-  makeClasses: ->
-    className = 'highlight-selected'
+  #There are multiple css classes that individually have an rgb code
+  #Calls the specific css class using number, can add more colors and themes by
+  #adding more css classes in the highlight-selected.less file
+  makeClasses: (number) ->
+    className = 'highlight-selected selection'+number
     if atom.config.get('highlight-selected.lightTheme')
       className += ' light-theme'
 
@@ -181,6 +143,8 @@ class HighlightedAreaView
       className += ' background'
     className
 
+  #highlights all the words in the selection array
+  #what allows multiple-selection to work 
   showHighlightOnSelectedWord: (range, selections) ->
     return false unless atom.config.get(
       'highlight-selected.hideHighlightOnSelectedWord')
@@ -196,6 +160,8 @@ class HighlightedAreaView
 
 #=============== Highlighting Code Block ===============
 
+#the deselection part of the selection
+#TO-DO: be able to de-select one at a time
   removeMarkers: =>
     return unless @views?
     return if @views.length is 0
@@ -206,6 +172,8 @@ class HighlightedAreaView
     @statusBarElement?.updateCount(@views.length)
     @emitter.emit 'did-remove-all-markers'
 
+  #Calculations for how a word is actually found and delimited
+###########################start###############################################
   isWordSelected: (selection) ->
     if selection.getBufferRange().isSingleLine()
       selectionRange = selection.getBufferRange()
@@ -235,7 +203,10 @@ class HighlightedAreaView
     selectionEnd = selection.getBufferRange().end
     range = Range.fromPointWithDelta(selectionEnd, 0, 1)
     @isNonWordCharacter(@getActiveEditor().getTextInBufferRange(range))
+  ###########################end###############################################
 
+  #Shows character length of the last word hightlighted down in the StatusBar
+  #in this format (1, length_of_string)
   setupStatusBar: =>
     return if @statusBarElement?
     return unless atom.config.get('highlight-selected.showInStatusBar')
