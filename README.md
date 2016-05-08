@@ -23,7 +23,7 @@ Some code and has been taken from Atom's
 
 Please log any issues and pull requests are more than welcome!
 
-![Gif in action](demo/Demo.gif)
+![Gif in action](https://raw.githubusercontent.com/nathanpotolsky/highlight-selected/master/demo/Status%20bar%20view.gif)
 
 Change the following CSS in your StyleSheet to change the colours to suit your
 theme. Either set the light theme check box in settings to be able to toggle
