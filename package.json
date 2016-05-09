@@ -3,15 +3,13 @@
   "main": "./lib/highlight-selected",
   "version": "0.0.0",
   "description": "Highlight multiple words",
-  "keywords": [highlight
-  ],
-  "activationCommands": {
-    "atom-workspace": "memory-bro:toggle"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nathanpotolsky/highlight-selected"
   },
-  "repository": "https://github.com/nathanpotolsky/highlight-selected",
   "license": "MIT",
   "engines": {
-    "atom": ">=1.0.0 <2.0.0"
+    "atom": ">=0.174.0 <2.0.0"
   },
   "dependencies": {
     "underscore-plus": "1.x"
@@ -20,5 +18,5 @@
     "coffee-script": "1.9.0",
     "coffeelint": "1.8.1",
     "coffeelint-jasmine": "0.0.2"
-  },
+  }
 }
