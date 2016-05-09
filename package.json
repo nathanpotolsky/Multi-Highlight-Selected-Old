@@ -1,5 +1,5 @@
 {
-  "name": "multi highlight-selected",
+  "name": "multi-highlight-selected",
   "main": "./lib/highlight-selected",
   "version": "0.0.0",
   "description": "Highlight multiple words",
