@@ -7,7 +7,8 @@ Double click on one or more words to highlight them throughout the open file.
 This is a fork of [highlight selected](https://github.com/richrace/highlight-selected).
 This is a group project for CSCI 2963 Introduction to Open Source.
 
-Group member:
+Group members:
+
 [Mukul Surajiwale](https://github.com/mukulio)
 
 [Ryan Manske](https://github.com/rymanske)
