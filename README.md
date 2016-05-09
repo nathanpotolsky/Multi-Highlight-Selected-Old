@@ -61,5 +61,3 @@ atom-text-editor, atom-text-editor::shadow {
 # Issues and Todo
 
 - Should we highlight symbols?
-- Merge this feature in the
-[find-and-replace](https://github.com/atom/find-and-replace) package
