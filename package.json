@@ -1,15 +1,17 @@
 {
-  "name": "highlight-selected",
+  "name": "multi highlight-selected",
   "main": "./lib/highlight-selected",
-  "version": "1.11.0",
-  "description": "Highlights the current word selected when double clicking",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/richrace/highlight-selected"
+  "version": "0.0.0",
+  "description": "Highlight multiple words",
+  "keywords": [highlight
+  ],
+  "activationCommands": {
+    "atom-workspace": "memory-bro:toggle"
   },
+  "repository": "https://github.com/nathanpotolsky/highlight-selected",
   "license": "MIT",
   "engines": {
-    "atom": ">=0.174.0 <2.0.0"
+    "atom": ">=1.0.0 <2.0.0"
   },
   "dependencies": {
     "underscore-plus": "1.x"
@@ -19,31 +21,4 @@
     "coffeelint": "1.8.1",
     "coffeelint-jasmine": "0.0.2"
   },
-  "readme": "# Highlight Selected\n\nDouble click on a word to highlight it throughout the open file.\n\nThis is something hacky I've put together as I missed the functionality that Sublime gave. As such, it's doesn't work 100% but is good enough to start!\n\nSome code and has been take from Atom's find and replace package ([link](https://github.com/atom/find-and-replace))\n\nPlease log any issues and pull requests are more than welcome!\n\n![Gif in action](http://i.imgur.com/C5FnzzQ.gif)\n\n# Issues and Todo\n\n- Some double click events are not triggered\n- Refactor and tidy up the code\n- Add specs to test it\n",
-  "readmeFilename": "README.md",
-  "bugs": {
-    "url": "https://github.com/richrace/highlight-selected/issues"
-  },
-  "homepage": "https://github.com/richrace/highlight-selected",
-  "_id": "highlight-selected@0.1.2",
-  "dist": {
-    "shasum": "7c9da46b1412aceb069f8ca2ca54d014986ad408"
-  },
-  "_resolved": "/var/folders/_x/p3bsx_694dx6h4t_jmpybn6c0000gp/T/d-11422-15778-1djbgod/package.tgz",
-  "_from": "/var/folders/_x/p3bsx_694dx6h4t_jmpybn6c0000gp/T/d-11422-15778-1djbgod/package.tgz",
-  "providedServices": {
-    "highlightSelected": {
-      "description": "Exposes Highlight Selected Events",
-      "versions": {
-        "1.0.0": "provideHighlightSelectedV1"
-      }
-    }
-  },
-  "consumedServices": {
-    "status-bar": {
-      "versions": {
-        "^1.0.0": "consumeStatusBar"
-      }
-    }
-  }
 }
