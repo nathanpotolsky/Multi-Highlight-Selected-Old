@@ -99,7 +99,6 @@ class HighlightedAreaView
     editor = @getActiveEditor()
     regex = new RegExp("\\S*\\w*\\b", 'gi')
     result = regex.exec(text)
-    regexSearch = result[0]
 
     return unless result?
     return if result[0].length < atom.config.get(
@@ -107,6 +106,7 @@ class HighlightedAreaView
               result.index isnt 0 or
               result[0] isnt result.input
 
+    regexSearch = result[0]
     regexFlags = 'g'
     if atom.config.get('highlight-selected.ignoreCase')
       regexFlags = 'gi'
