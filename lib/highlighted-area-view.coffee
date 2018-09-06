@@ -98,9 +98,9 @@ class HighlightedAreaView
   highLightOneSelection: (text, i) ->
     editor = @getActiveEditor()
     regex = new RegExp("\\S*\\w*\\b", 'gi')
+    return unless result?
     result = regex.exec(text)
 
-    return unless result?
     return if result[0].length < atom.config.get(
       'highlight-selected.minimumLength') or
               result.index isnt 0 or
