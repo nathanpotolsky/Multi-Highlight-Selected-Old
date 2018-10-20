@@ -1,23 +1,10 @@
-# Highlight Multiple Selected
+# Multi Highlight Selected
 
 <!-- [![Build Status](https://travis-ci.org/richrace/highlight-selected.svg?branch=master)](https://travis-ci.org/richrace/highlight-selected) -->
 
 Double click on one or more words to highlight them throughout the open file.
 
 This is a fork of [highlight selected](https://github.com/richrace/highlight-selected).
-This is a group project for CSCI 2963 Introduction to Open Source.
-
-Group members:
-
-* [Mukul Surajiwale](https://github.com/mukulio)
-
-* [Ryan Manske](https://github.com/rymanske)
-
-* [Alwin Joy](https://github.com/alwinrobot)
-
-* [Nathan Potolsky](https://github.com/nathanpotolsky)
-
-* [Zhenyu (Victor) Zhu](https://github.com/SLiNv)
 
 Some code and has been taken from Atom's
   [find and replace](https://github.com/atom/find-and-replace) package
